@@ -201,6 +201,24 @@ end
 Note that the only change in our method was to add the child nodes to the
 **beginning** of the `nodes_to_visit` array instead of the end.
 
+Depth-first search also lends itself well to a recursive solution, where we
+traverse each sub-tree of the node's children recursively before moving to the
+next sub-tree:
+
+```rb
+def depth_first_traversal(node, result = [])
+  # visit each node (add it to the list of results)
+  result.push(node[:value])
+
+  node[:children].each do |child|
+    # visit each child node
+    depth_first_traversal(child, result)
+  end
+
+  result
+end
+```
+
 ## When to Use Breadth-First vs. Depth-First Traversal Methods
 
 Unfortunately, there are no hard and fast rules here — it really depends on the
