@@ -295,3 +295,8 @@ Once you have the tests passing, try modifying your method to use breadth-first
 traversal instead; the tests should still pass.
 
 [get-element-by-id]: https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById
+
+## Resources
+
+- [BaseCS: Tree Traversal](https://www.youtube.com/watch?v=eFK3pzJEHKI)
+- [Tree Traversal Space Requirements](https://eugene-eeo.github.io/blog/tree-traversal-storage.html)
