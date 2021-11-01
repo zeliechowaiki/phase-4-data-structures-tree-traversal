@@ -16,11 +16,11 @@ different methods for visiting the nodes in a tree.
 
 ## Types of Tree Traversal
 
-Tree traversal refers to the process of visitng each of the nodes in a tree in
+Tree traversal refers to the process of visiting each of the nodes in a tree in
 some systematic way. There are several approaches that are commonly used, each
 of which results in the nodes being visited in a particular order. These
-approaches can be divided into two general categories: breadth-first and
-depth-first.
+approaches can be divided into two general categories: **breadth-first** and
+**depth-first**.
 
 ### Breadth First
 
@@ -38,34 +38,33 @@ In this example, the nodes would be visited in the following order:
 Say we want to build a method on our `Tree` class that takes a node as input and
 returns an array containing the values of the root node and all of its child
 nodes in breadth-first order. How would we go about building this in code? We
-will need to use a second array as a temporary holder; the order in which we add
-nodes to the holder array will control the order of the elements in the output
-array.
+will need to use a second array to keep track of which nodes we still need to
+visit. The order in which we add nodes to this second array will control the
+order of the elements in the output array.
 
 Let's start by writing some pseudocode:
 
 ```text
 Initialize an empty output array
-Initialize a holder array and add the root node to it
-While there are nodes in the holder array
-  Remove the first node from the holder array
+Initialize an array of nodes to visit and add the root node to it
+While there are nodes in the nodes to visit array
+  Remove the first node from the nodes to visit array
   Add its value to the output array
-  Add its children (if any) to the end of the holder array
+  Add its children (if any) to the end of the nodes to visit array
 Return the output array
 ```
 
 Take a couple of minutes to walk through the pseudocode using the example tree
 in the diagram above so you can visualize how it works.
 
-So let's start by defining our method and creating our `holder` and `result`
-array variables. We also want to set up our method to take a node as an
-argument, and initialize `holder` with that variable:
+Let's start by defining our method and creating our `nodes_to_visit` and
+`result` array variables. We also want to set up our method to take a node as an
+argument, and initialize `nodes_to_visit` with that variable:
 
 ```rb
 def breadth_first_traversal(node)
   result = []
-  holder = [node]
-
+  nodes_to_visit = [node]
 end
 ```
 
@@ -74,34 +73,32 @@ Next, we'll create our `while` loop:
 ```rb
 def breadth_first_traversal(node)
   result = []
-  holder = [node]
+  nodes_to_visit = [node]
 
-  while holder.length > 0
+  while nodes_to_visit.length > 0
     # traverse our node
   end
-
 end
 ```
 
 Inside our `while` loop, we want to do three things:
 
-1. Remove the first node from the holder array
+1. Remove the first node from the `nodes_to_visit` array
 2. Add its value to the result array, and
-3. Add its children (if any) to the holder array
-
-To add the node's children to the holder array, we will make use of Ruby's
-`splat` operator (`*`), which is the Ruby equivalent of JavaScript's spread
-operator. Finally, we will return the `result` array:
+3. Add its children (if any) to the `nodes_to_visit` array
 
 ```rb
 def breadth_first_traversal(node)
   result = []
-  holder = [node]
+  nodes_to_visit = [node]
 
-  while holder.length > 0
-    current = holder.shift
-    result.push(current[:value])
-    holder.push(*current[:children])
+  while nodes_to_visit.length > 0
+    # 1. Remove the first node from the `nodes_to_visit` array
+    node = nodes_to_visit.shift
+    # 2. Add its value to the result array
+    result.push(node[:value])
+    # 3. Add its children (if any) to the END of the `nodes_to_visit` array
+    nodes_to_visit = nodes_to_visit + node[:children]
   end
 
   result
@@ -161,20 +158,20 @@ process is almost identical to the breadth-first traversal!
 
 Let's think about what we did in that case. We started at the root (20), then
 visited its left-most child (50). We added that node's children to the end of
-the holder array then continued visiting the remaining children of the root node
-(2 and 11). In this case, however, we want to visit the children of 50
-**before** we visit its siblings. Doing that is just a matter of making one
-small change to our earlier code.
+the array of nodes to visit, then continued visiting the remaining children of
+the root node (2 and 11). In this case, however, we want to visit the children
+of 50 **before** we visit its siblings. Doing that is just a matter of making
+one small change to our earlier code.
 
 Here's what our pseudocode would look like:
 
 ```text
 Initialize an empty output array
-Initialize a holder array and add the root node to it
-While there are nodes in the holder array
-  Remove the first node from the holder array
+Initialize an array of nodes to visit and add the root node to it
+While there are nodes in the array of nodes to visit
+  Remove the first node from the array of nodes to visit
   Add its value to the output array
-  Add its children (if any) to the BEGINNING of the holder array
+  Add its children (if any) to the BEGINNING of the array of nodes to visit
 Return the output array
 ```
 
@@ -186,21 +183,41 @@ The final code looks like this:
 ```rb
 def depth_first_traversal(node)
   result = []
-  holder = [node]
+  nodes_to_visit = [node]
 
-  while arr.length > 0
-    current = holder.shift
-    result.push(current[:value])
-    holder.unshift(*current[:children])
+  while nodes_to_visit.length > 0
+    # 1. Remove the first node from the `nodes_to_visit` array
+    node = nodes_to_visit.shift
+    # 2. Add its value to the result array
+    result.push(node[:value])
+    # 3. Add its children (if any) to the BEGINNING of the `nodes_to_visit` array
+    nodes_to_visit = node[:children] + nodes_to_visit
   end
 
   result
 end
 ```
 
-Note that the only change in our method was to use `unshift` in place of `push`
-to add the child nodes to the **beginning** of the holder array instead of the
-end.
+Note that the only change in our method was to add the child nodes to the
+**beginning** of the `nodes_to_visit` array instead of the end.
+
+Depth-first search also lends itself well to a recursive solution, where we
+traverse each sub-tree of the node's children recursively before moving to the
+next sub-tree:
+
+```rb
+def depth_first_traversal(node, result = [])
+  # visit each node (add it to the list of results)
+  result.push(node[:value])
+
+  node[:children].each do |child|
+    # visit each child node
+    depth_first_traversal(child, result)
+  end
+
+  result
+end
+```
 
 ## When to Use Breadth-First vs. Depth-First Traversal Methods
 
@@ -248,18 +265,19 @@ Conversely, if we have a long skinny tree, where each node has many children and
 grandchildren, but there aren't a lot of nodes within each level, breadth-first
 traversal will be more efficient.
 
-## Example Use of Tree Traversal
+## Exercise: Build `getElementById`
 
-Let's get some practice using our traversal skills by recreating the
-[`Document.getElementById` method][get-element-by-id] that's provided by Web
-APIs.
+Let's get some practice using our traversal skills by creating a Ruby version of
+JavaScript's [`Document.getElementById` method][get-element-by-id].
 
 In the `lib` folder, we having included an implementation of a `Tree` class. The
 nodes in the `Tree` will be structured as follows:
 
 ```rb
 {
-  value: "some_value",
+  tag_name: 'h1',
+  id: 'heading',
+  text_content: 'Title',
   children: []
 }
 ```
@@ -269,9 +287,9 @@ handle that part.
 
 To pass the tests, you will need to add an instance method, `get_element_by_id`,
 to the `Tree` class that uses the depth-first approach to traverse the `Tree`
-and find the desired node. Like the native method, your method should take a
-string value as an argument and return the node with that value. If a matching
-node is not found, your method should return `nil`.
+and find the desired node. Like the browser's `getElementById` method, your
+method should take a string as an argument and return the node with that value.
+If a matching node is not found, your method should return `nil`.
 
 Once you have the tests passing, try modifying your method to use breadth-first
 traversal instead; the tests should still pass.
