@@ -4,13 +4,13 @@ class Tree
   end
 
   def get_element_by_id(id)
-    holder = [@root]
+    nodes_to_visit = [@root]
 
-    until holder.empty?
-      current = holder.pop
-      return current if current[:value] == id
+    until nodes_to_visit.empty?
+      current = nodes_to_visit.pop
+      return current if current[:id] == id
 
-      holder.push(*current[:children])
+      nodes_to_visit = nodes_to_visit + current[:children]
     end
     nil
   end
